@@ -1,0 +1,30 @@
+
+# Python environment and cache
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+
+# Frontend dependencies and generated build
+frontend/node_modules/
+frontend/dist/
+
+# Large datasets
+data/
+*.nii
+*.nii.gz
+*.dcm
+
+# Logs and temporary files
+*.log
+.env
+.env.*
+!.env.example
+
+# Editor and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

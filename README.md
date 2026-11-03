@@ -1,43 +1,47 @@
 # AI-Assisted Medical Imaging and Diagnosis System
 
-## 1. Project Overview
+An educational medical-imaging prototype that combines deep-learning models, a Python REST API, and a React interface to explore chest X-ray classification, Grad-CAM visual explanations, and experimental CT segmentation.
 
-This project is an educational medical-imaging prototype that combines deep learning, a REST API, and a React web interface to explore medical image classification, visual explanations, and experimental CT segmentation.
+> **Safety notice:** This is a research and educational prototype, not a medical device. It must not be used to diagnose patients or guide treatment.
 
-**Important:** This project is for research and educational demonstration only. It is not a medical device and must not be used to diagnose patients or guide treatment.
+## Features
 
-## 2. Features
-
-- Chest X-ray classification into NORMAL and PNEUMONIA categories.
-- Model score display and class-score comparison.
-- Grad-CAM visualization to illustrate image regions influencing a classification.
+- Chest X-ray classification into `NORMAL` and `PNEUMONIA` categories.
+- Display of model scores and class-score comparisons.
+- Grad-CAM visualizations to inspect image regions influencing a classification.
 - Experimental 3D CT segmentation endpoint that returns a NIfTI mask.
 - FastAPI backend with interactive API documentation.
-- React and Vite frontend for uploading and viewing supported images.
-- Automated API tests for health checks and invalid uploads.
+- React + Vite frontend for image upload and result visualization.
+- API tests covering health checks and invalid uploads.
 
-## 3. Technology Stack
+## Technology stack
 
-### Backend
-- Python
-- FastAPI
-- PyTorch and Torchvision
-- MONAI
-- NiBabel
-- NumPy
+| Area | Technologies |
+|---|---|
+| Backend/API | Python, FastAPI |
+| Deep learning | PyTorch, Torchvision, MONAI |
+| Medical imaging/data | NiBabel, NumPy |
+| Frontend | React, Vite, JavaScript, CSS |
+| Testing | Pytest, Requests |
 
-### Frontend
-- React
-- Vite
-- JavaScript
-- CSS
-- Lucide React
+## Architecture
 
-### Testing
-- Pytest
-- Requests
+```text
+React + Vite frontend
+        |
+        | HTTP requests
+        v
+FastAPI backend
+   |             |
+   v             v
+X-ray model   CT segmentation
+(ResNet18)    (experimental 3D U-Net)
+   |
+   v
+Prediction scores + Grad-CAM explanation
+```
 
-## 4. Project Structure
+## Project structure
 
 ```text
 AI-Medical-Imaging/
@@ -65,9 +69,9 @@ AI-Medical-Imaging/
 └── README.md
 ```
 
-Some files and folders may be absent if they have not been created or retained locally.
+Some data, model, or output files may not be present in every checkout. Check the repository contents before running training or inference workflows.
 
-## 5. Installation
+## Setup
 
 ### Prerequisites
 
@@ -75,32 +79,27 @@ Some files and folders may be absent if they have not been created or retained l
 - Node.js and npm
 - Git (recommended)
 
-### Backend setup
+### Backend
 
-Open a terminal in the project root and activate the existing virtual environment.
+From the repository root, activate the existing virtual environment if you have one, then install dependencies:
 
-Windows PowerShell:
+**Windows PowerShell**
 
 ```powershell
 .\.venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
 ```
 
-Start the backend:
+Start the API:
 
 ```powershell
 python -m uvicorn backend.main:app --reload
 ```
 
-API base URL:
+- API base URL: http://127.0.0.1:8000
+- Interactive API docs: http://127.0.0.1:8000/docs
 
-`http://127.0.0.1:8000`
-
-Interactive API documentation:
-
-`http://127.0.0.1:8000/docs`
-
-### Frontend setup
+### Frontend
 
 Open a second terminal:
 
@@ -110,79 +109,75 @@ npm install
 npm run dev
 ```
 
-Open the local URL displayed by Vite, typically:
+Open the local URL printed by Vite (typically http://localhost:5173).
 
-`http://localhost:5173`
+## API endpoints
 
-## 6. API Endpoints
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET | `/` | Root endpoint |
+| GET | `/health` | Health check |
+| POST | `/upload` | Image upload |
+| POST | `/predict` | Chest X-ray classification |
+| POST | `/explain` | Grad-CAM visualization |
+| POST | `/segment-ct` | Experimental CT segmentation |
 
-| Endpoint | Purpose |
-|---|---|
-| `GET /` | Root endpoint |
-| `GET /health` | Health check |
-| `POST /upload` | Image upload endpoint |
-| `POST /predict` | Chest X-ray classification |
-| `POST /explain` | Grad-CAM visualization |
-| `POST /segment-ct` | Experimental CT segmentation |
+Use the interactive API documentation at `/docs` to inspect request formats.
 
-Use the interactive API documentation to inspect request formats and test the available endpoints.
-
-## 7. Model Evaluation
+## Recorded experimental evaluation
 
 ### Chest X-ray classification
 
 The recorded test-set results for the ResNet18 baseline were:
 
-- Accuracy: 88.94%
-- Sensitivity: 99.23%
-- Specificity: 71.79%
-- Precision: 85.43%
+| Metric | Result |
+|---|---:|
+| Accuracy | 88.94% |
+| Sensitivity | 99.23% |
+| Specificity | 71.79% |
+| Precision | 85.43% |
 
-These results are from the current experimental evaluation. They do not establish clinical reliability, and the relatively low specificity indicates that false-positive classifications remain a concern.
+These are experimental results from the current evaluation, not evidence of clinical reliability. The specificity indicates false positives remain a concern.
 
 ### CT segmentation
 
-A lightweight 3D U-Net was trained as a prototype using a limited subset of the available CT dataset.
+A lightweight 3D U-Net was trained as a prototype using a limited subset of the available CT dataset. The recorded one-case Dice score was approximately **0.011**, indicating very poor overlap with the reference segmentation in that evaluation case. The segmentation output is experimental and must not be treated as reliable tumor localization.
 
-The recorded one-case Dice score was approximately 0.011. This indicates very poor overlap with the reference segmentation on that evaluation case. The model must be treated as experimental and its output must not be interpreted as a reliable tumor localization.
+## Testing
 
-## 8. Testing
-
-From the project root, run:
+From the repository root:
 
 ```powershell
 python -m pytest backend/test_api.py -v
 ```
 
-The three API tests previously passed in the development environment. Rerun them after making code changes.
+The three API tests previously passed in the development environment. Rerun them after code changes.
 
-Build the frontend for production:
+Build the frontend:
 
 ```powershell
 cd frontend
 npm run build
 ```
 
-The frontend production build has also previously succeeded in the development environment.
+The frontend production build previously succeeded in the development environment.
 
-## 9. Limitations and Safety
+## Limitations and responsible use
 
 - The classification model is an educational baseline, not a clinically validated diagnostic system.
-- Grad-CAM highlights model-relevant image regions but does not prove that a disease or lesion exists in those regions.
-- CT segmentation performance is currently poor and requires substantial further development and evaluation.
-- Results may be affected by dataset size, data distribution, preprocessing, and model limitations.
-- Uploaded medical images should be de-identified. Do not upload identifiable patient information to an unapproved environment.
-- Clinical use requires appropriate datasets, rigorous independent validation, specialist oversight, and applicable regulatory approval.
+- Grad-CAM highlights regions influencing a model prediction; it does not prove that disease is present in those regions.
+- CT segmentation performance is currently poor and requires substantial improvement and multi-case validation.
+- Results may be affected by dataset size, distribution, preprocessing, and model limitations.
+- De-identify medical images. Do not upload identifiable patient information to an unapproved environment.
+- Clinical use would require rigorous independent validation, specialist oversight, and applicable regulatory approval.
 
-## 10. Future Improvements
+## Future improvements
 
 - Improve segmentation preprocessing, training, and validation.
-- Evaluate on multiple independent CT cases and report Dice and other appropriate metrics.
-- Add input validation and clearer error handling.
-- Add automated tests for successful predictions and segmentation.
-- Containerize the application and document deployment.
-- Improve frontend visualization and accessibility.
+- Evaluate segmentation on multiple independent CT cases and report appropriate metrics.
+- Expand automated tests for successful predictions and segmentation.
+- Improve input validation, error handling, accessibility, and deployment documentation.
 
-## 11. Conclusion
+## Summary
 
-This prototype demonstrates how deep-learning models, explainability visualizations, a Python API, and a React frontend can be integrated into a medical-imaging research application. Its current outputs are intended for educational experimentation only.
+This project demonstrates an end-to-end integration of deep-learning experimentation, explainability, medical-image processing, a Python API, and a React interface. Its current outputs are intended strictly for educational experimentation.
